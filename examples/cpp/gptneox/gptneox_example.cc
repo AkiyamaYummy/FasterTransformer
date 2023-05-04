@@ -34,6 +34,8 @@ using namespace fastertransformer;
 template<typename T>
 void gptneox_example(const INIReader reader);
 
+void callback(std::unordered_map<std::string, Tensor>* tensor_map, void* ctx);
+
 int main(int argc, char* argv[])
 {
     mpi::initialize(&argc, &argv);
@@ -323,6 +325,8 @@ void gptneox_example(const INIReader reader)
                                 &prop,
                                 attention_type);
 
+    gpt.registerCallback(&callback, nullptr);
+
     int* d_output_ids;
     int* d_sequence_lengths;
     deviceMalloc(&d_output_ids, request_batch_size * beam_width * total_output_len, false);
@@ -501,4 +505,10 @@ void gptneox_example(const INIReader reader)
     }
 
     return;
+}
+
+
+void callback(std::unordered_map<std::string, Tensor>* tensor_map, void* ctx)
+{
+    std::cout << "callback" << std::endl;
 }
